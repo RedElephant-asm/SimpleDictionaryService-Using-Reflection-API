@@ -46,8 +46,8 @@ public enum CRUDOperations{
 
         @Override
         void initSpecifications() {
-            this.inReflectionFields.addAll(Arrays.asList("ferfer"));
-            this.inReflectionMethods.addAll(Arrays.asList("metod1"));
+            this.inReflectionFields.addAll(Arrays.asList());
+            this.inReflectionMethods.addAll(Arrays.asList());
         }
     };
 
@@ -84,6 +84,6 @@ public enum CRUDOperations{
     abstract void initSpecifications();
 
     public Object execute(Object... args) {
-        return this.reflectionHandler.invokeLambdaMethod(reflectionHandler.findField(inReflectionFields.get(0)), args);
+        return this.reflectionHandler.invokeLambdaMethod(inReflectionFields.get(0), args);
     }
 }

@@ -1,5 +1,6 @@
 package org.SimpleDictionaryService;
 
+import org.SimpleDictionaryService.throwable.OccurrenceTime;
 import org.SimpleDictionaryService.throwable.UnknownFieldException;
 import org.SimpleDictionaryService.throwable.UnknownMethodException;
 
@@ -33,8 +34,8 @@ public class ReflectionHandler{
         try {
             if (responseField.isPresent()){
                 return responseField.get();
-            }else throw new NoSuchFieldException();
-        }catch (NoSuchFieldException exception){
+            }else throw new UnknownFieldException(fieldName, OccurrenceTime.ON_USE);
+        }catch (UnknownFieldException exception){
             exception.printStackTrace();
         }
         return null;
@@ -57,20 +58,21 @@ public class ReflectionHandler{
         }catch (NoSuchMethodException exception){
             exception.printStackTrace();
         }
-        return null;
+        return responseMethod.get();
     }
 
-    public Object invokeMethod(Method method, Object... args){
+    public Object invokeMethod(String methodName, Object... args){
         try {
-            return method.invoke(context, args);
+            return this.findMethod(methodName).invoke(context, args);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
         return new Object();
     }
 
-    public Object invokeLambdaMethod(Field field, Object... args){
+    public Object invokeLambdaMethod(String fieldName, Object... args){
         try {
+            Field field = this.findField(fieldName);
             return field.getType().getDeclaredMethods()[0].invoke(field.get(context), args);
         } catch (IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
@@ -87,7 +89,7 @@ public class ReflectionHandler{
                     try {
                         if(requiredField.isPresent()){
                             this.fields.add(requiredField.get());
-                        }else throw new UnknownFieldException(checkedFieldName);
+                        }else throw new UnknownFieldException(checkedFieldName, OccurrenceTime.ON_INIT);
                     }catch (UnknownFieldException exception){
                         exception.printStackTrace();
                     }
@@ -103,7 +105,7 @@ public class ReflectionHandler{
                     try {
                         if(requiredMethod.isPresent()){
                             this.methods.add(requiredMethod.get());
-                        }else throw new UnknownMethodException(checkedMethodName);
+                        }else throw new UnknownMethodException(checkedMethodName, OccurrenceTime.ON_INIT);
                     }catch (UnknownMethodException exception){
                         exception.printStackTrace();
                     }
