@@ -9,7 +9,7 @@ public class UnknownMethodException extends Exception{
         String message = "";
         switch (occurrenceTime){
             case ON_INIT:
-                message = String.format("Unknown method \"%s\". Possibly method was not creating or changed the name during refactoring.", methodName);
+                message = String.format("Unknown method \"%s\". Possibly method was not created or changed the name during refactoring.", methodName);
                 break;
             case ON_USE:
                 message = String.format("Method \"%s\" not included in the list of methods used for reflection.", methodName);

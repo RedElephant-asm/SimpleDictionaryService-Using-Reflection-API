@@ -1,4 +1,4 @@
-package org.SimpleDictionaryService;
+package org.SimpleDictionaryService.handlers;
 
 import org.SimpleDictionaryService.throwable.OccurrenceTime;
 import org.SimpleDictionaryService.throwable.UnknownFieldException;
@@ -11,20 +11,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-public class ReflectionHandler{
+public class ReflectionHandler<T>{
 
     private final List<Field> fields = new ArrayList<>();
     private final List<Method> methods = new ArrayList<>();
-    private Object context;
-    private Class<?> contextType;
+    private final Class<T> contextType;
 
-    public ReflectionHandler(Class<?> contextType, Object context, List<String> fieldNames, List<String> methodNames){
+    public ReflectionHandler(Class<T> contextType){
         this.contextType = contextType;
-        this.context = context;
-        this.initializeUsedFields(fieldNames);
-        this.initializeUsedMethods(methodNames);
     }
 
     public Field findField(String fieldName){
@@ -53,15 +48,15 @@ public class ReflectionHandler{
             if(responseMethod.isPresent()){
                 return responseMethod.get();
             }else{
-                throw new NoSuchMethodException();
+                throw new UnknownMethodException(methodName, OccurrenceTime.ON_USE);
             }
-        }catch (NoSuchMethodException exception){
+        }catch (UnknownMethodException exception){
             exception.printStackTrace();
         }
         return responseMethod.get();
     }
 
-    public Object invokeMethod(String methodName, Object... args){
+    public Object invokeMethod(T context, String methodName, Object... args){
         try {
             return this.findMethod(methodName).invoke(context, args);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -70,7 +65,7 @@ public class ReflectionHandler{
         return new Object();
     }
 
-    public Object invokeLambdaMethod(String fieldName, Object... args){
+    public Object invokeLambdaMethod(T context, String fieldName, Object... args){
         try {
             Field field = this.findField(fieldName);
             return field.getType().getDeclaredMethods()[0].invoke(field.get(context), args);
@@ -80,14 +75,16 @@ public class ReflectionHandler{
         return new Object();
     }
 
-    private void initializeUsedFields(List<String> fieldNames){
+    public void initializeUsedFields(List<String> fieldNames){
         fieldNames.stream()
                 .forEach(checkedFieldName -> {
-                    Optional<Field> requiredField = Arrays.stream(this.contextType.getFields())
+                    Optional<Field> requiredField = Arrays.stream(this.contextType.getDeclaredFields())
                             .filter(field -> field.getName().equals(checkedFieldName))
                             .findAny();
                     try {
                         if(requiredField.isPresent()){
+                            // Only for enum variable(inner class)!
+                            // requiredField.get().setAccessible(true);
                             this.fields.add(requiredField.get());
                         }else throw new UnknownFieldException(checkedFieldName, OccurrenceTime.ON_INIT);
                     }catch (UnknownFieldException exception){
@@ -96,7 +93,7 @@ public class ReflectionHandler{
                 });
     }
 
-    private void initializeUsedMethods(List<String> methodNames){
+    public void initializeUsedMethods(List<String> methodNames){
         methodNames.stream()
                 .forEach(checkedMethodName -> {
                     Optional<Method> requiredMethod = Arrays.stream(this.contextType.getMethods())
@@ -104,6 +101,8 @@ public class ReflectionHandler{
                             .findAny();
                     try {
                         if(requiredMethod.isPresent()){
+                            // Only for enum variable(inner class)!
+                            // requiredMethod.get().setAccessible(true);
                             this.methods.add(requiredMethod.get());
                         }else throw new UnknownMethodException(checkedMethodName, OccurrenceTime.ON_INIT);
                     }catch (UnknownMethodException exception){

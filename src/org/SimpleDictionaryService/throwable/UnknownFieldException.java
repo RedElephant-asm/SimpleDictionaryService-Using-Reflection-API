@@ -9,7 +9,7 @@ public class UnknownFieldException extends Exception{
         String message = "";
         switch (occurrenceTime){
             case ON_INIT:
-                message = String.format("Unknown field \"%s\". Possibly field was not creating or changed the name during refactoring.", fieldName);
+                message = String.format("Unknown field \"%s\". Possibly field was not created or changed the name during refactoring.", fieldName);
                 break;
             case ON_USE:
                 message = String.format("Field \"%s\" not included in the list of fields used for reflection.", fieldName);

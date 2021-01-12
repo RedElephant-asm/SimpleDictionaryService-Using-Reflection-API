@@ -1,34 +1,43 @@
 package org.SimpleDictionaryService;
 
+import org.SimpleDictionaryService.throwable.WrongEncodingException;
+
+import java.io.*;
+
 /**
  * @author RedElephant
  */
 public class DictionaryService {
 
-    private String fullFileName;
-    private Languages keyLanguage;
-    private static final Languages wordLanguage = Languages.UTF16RUSSIAN;
+    private Dictionary dictionary;
+    private InputStream inputStream;
+    private OutputStream outputStream;
 
-    public DictionaryService(){}
-
-    public DictionaryService(String fullFileName, Languages keyLanguage) {
-        this.fullFileName = fullFileName;
-        this.keyLanguage = keyLanguage;
+    public DictionaryService(Dictionary dictionary){
+        this.dictionary = dictionary;
     }
 
-    public String getFullFileName() {
-        return fullFileName;
+    public void createInDictionary(){
+
     }
 
-    public void setFullFileName(String fullFileName) {
-        this.fullFileName = fullFileName;
+    public void readFromDictionary(){
+
     }
 
-    public Languages getKeyLanguage() {
-        return keyLanguage;
+    public void updateInDictionary(){
+
     }
 
-    public void setKeyLanguage(Languages keyLanguage) {
-        this.keyLanguage = keyLanguage;
+    public void deleteFromDictionary(){
+
+    }
+
+    public Dictionary getDictionary() {
+        return dictionary;
+    }
+
+    public void setDictionary(Dictionary dictionary) {
+        this.dictionary = dictionary;
     }
 }

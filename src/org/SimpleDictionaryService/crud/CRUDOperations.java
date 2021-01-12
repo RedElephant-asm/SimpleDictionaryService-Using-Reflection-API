@@ -1,9 +1,11 @@
-package org.SimpleDictionaryService;
+package org.SimpleDictionaryService.crud;
+
+import org.SimpleDictionaryService.handlers.ReflectionHandler;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
+@Deprecated
 public enum CRUDOperations{
 
     CREATE  (){
@@ -51,39 +53,21 @@ public enum CRUDOperations{
         }
     };
 
-    @FunctionalInterface
-    public interface Creating extends CRUDExecutable {
-        int execute(Integer firstValue, Integer secondValue);
-    }
-
-    @FunctionalInterface
-    public interface Reading extends CRUDExecutable {
-        String execute(String strValue);
-    }
-
-    @FunctionalInterface
-    public interface Updating extends CRUDExecutable {
-        int execute(int firstValue);
-    }
-
-    @FunctionalInterface
-    public interface Deleting extends CRUDExecutable {
-        int execute(int firstValue);
-    }
-
     protected List<String> inReflectionMethods = new ArrayList<>(Arrays.<String>asList());
     protected List<String> inReflectionFields = new ArrayList<>(Arrays.<String>asList("method"));
 
     protected final ReflectionHandler reflectionHandler;
 
-    CRUDOperations(String... additional) {
+    CRUDOperations() {
         this.initSpecifications();
-        this.reflectionHandler = new ReflectionHandler(this.getClass(), this, this.inReflectionFields, this.inReflectionMethods);
+        this.reflectionHandler = new ReflectionHandler<>(this.getClass());
+        this.reflectionHandler.initializeUsedFields(inReflectionFields);
+        this.reflectionHandler.initializeUsedMethods(inReflectionMethods);
     }
 
     abstract void initSpecifications();
 
     public Object execute(Object... args) {
-        return this.reflectionHandler.invokeLambdaMethod(inReflectionFields.get(0), args);
+        return this.reflectionHandler.invokeLambdaMethod(this, inReflectionFields.get(0), args);
     }
 }
