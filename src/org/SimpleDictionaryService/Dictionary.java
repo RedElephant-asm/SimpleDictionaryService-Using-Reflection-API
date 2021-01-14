@@ -24,28 +24,28 @@ public class Dictionary{
         this.file = new File(fullFileName);
         this.wordLanguage = wordLanguage;
         this.keyLanguage = keyLanguage;
-        this.encodingHandler = new EncodingHandler(fileEncoding);
-        if(!this.isEncodingsMatches()){
-            throw new WrongEncodingException(this.fileEncoding.name(), fullFileName);
-        }
+        this.encodingHandler = new EncodingHandler(fileEncoding, wordLanguage);
+//        if(!this.isEncodingsMatches()){
+//            throw new WrongEncodingException(this.fileEncoding.name(), fullFileName);
+//        }
 
     }
 
-    public boolean isEncodingsMatches(){
-        int encByteCount = 0;
-        try(InputStream inputStream = new FileInputStream(this.file)) {
-            int fileByteCount = inputStream.available();
-            for (int counter = 0; counter < fileByteCount; counter++){
-                if (fileEncoding.matches(inputStream.read())){
-                    encByteCount++;
-                }
-            }
-            return ((float)encByteCount / fileByteCount) > 0.6;
-        }catch (IOException exception){
-            exception.printStackTrace();
-        }
-        return false;
-    }
+//    public boolean isEncodingsMatches(){
+//        int encByteCount = 0;
+//        try(InputStream inputStream = new FileInputStream(this.file)) {
+//            int fileByteCount = inputStream.available();
+//            for (int counter = 0; counter < fileByteCount; counter++){
+//                if (fileEncoding.matches(inputStream.read())){
+//                    encByteCount++;
+//                }
+//            }
+//            return ((float)encByteCount / fileByteCount) > 0.6;
+//        }catch (IOException exception){
+//            exception.printStackTrace();
+//        }
+//        return false;
+//    }
 
     public Language getWordLanguage() {
         return wordLanguage;

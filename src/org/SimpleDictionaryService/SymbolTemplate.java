@@ -3,6 +3,7 @@ package org.SimpleDictionaryService;
 public class SymbolTemplate {
     private String template;
     private int countOfBytes;
+    public static final SymbolTemplate DEFAULT_TEMPLATE = new SymbolTemplate("0[01]{7}", 1);
 
     public SymbolTemplate(String template){
         this(template, 1);
