@@ -1,9 +1,5 @@
 package org.SimpleDictionaryService;
 
-import org.omg.CORBA.PUBLIC_MEMBER;
-
-import java.util.regex.Pattern;
-
 public enum Encoding {
 
     UTF8            ("UTF-8",
@@ -12,8 +8,12 @@ public enum Encoding {
                      new SymbolTemplate("11110[01]{3}10[01]{6}10[01]{6}10[01]{6}", 4)),
 
     UTF16           ("UTF-16BE",
+                     new SymbolTemplate("[0]{8}[01]{8}", 2),
                      new SymbolTemplate("[01]{16}", 2),
-                     new SymbolTemplate("1101100[01]{9}1101111[01]{9}", 4));
+                     new SymbolTemplate("1101100[01]{9}1101111[01]{9}", 4)),
+
+    ASCII           ("ASCII",
+                     new SymbolTemplate("0[01]{7}", 1));
 
     public static final int UNICODE_TABLE_LENGTH = 0x110000;
 
@@ -27,7 +27,7 @@ public enum Encoding {
     }
 
     public SymbolTemplate findTemplateByByteCount(int byteCount){
-        SymbolTemplate result = SymbolTemplate.DEFAULT_TEMPLATE;
+        SymbolTemplate result = SymbolTemplate.ASCII128DEFAULT_TEMPLATE;
         for (SymbolTemplate template: this.getTemplates()){
             if(template.getCountOfBytes() == byteCount){
                 result = template;
