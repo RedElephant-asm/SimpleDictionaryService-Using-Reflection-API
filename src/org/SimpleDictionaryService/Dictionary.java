@@ -25,65 +25,21 @@ public class Dictionary{
         this.wordLanguage = wordLanguage;
         this.keyLanguage = keyLanguage;
         this.encodingHandler = new EncodingHandler(fileEncoding, wordLanguage);
-//        if(!this.isEncodingsMatches()){
-//            throw new WrongEncodingException(this.fileEncoding.name(), fullFileName);
-//        }
+        if(!this.isEncodingCorrect()){
+            throw new WrongEncodingException(fileEncoding.name(), fullFileName);
+        }
 
     }
 
-//    public boolean isEncodingsMatches(){
-//        int encByteCount = 0;
-//        try(InputStream inputStream = new FileInputStream(this.file)) {
-//            int fileByteCount = inputStream.available();
-//            for (int counter = 0; counter < fileByteCount; counter++){
-//                if (fileEncoding.matches(inputStream.read())){
-//                    encByteCount++;
-//                }
-//            }
-//            return ((float)encByteCount / fileByteCount) > 0.6;
-//        }catch (IOException exception){
-//            exception.printStackTrace();
-//        }
-//        return false;
-//    }
-
-    public Language getWordLanguage() {
-        return wordLanguage;
-    }
-
-    public void setWordLanguage(Language wordLanguage) {
-        this.wordLanguage = wordLanguage;
-    }
-
-    public Language getKeyLanguages() {
-        return keyLanguage;
-    }
-
-    public void setKeyLanguages(Language keyLanguage) {
-        this.keyLanguage = keyLanguage;
-    }
-
-    public File getFile() {
-        return file;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
-    }
-
-    public Language getKeyLanguage() {
-        return keyLanguage;
-    }
-
-    public void setKeyLanguage(Language keyLanguage) {
-        this.keyLanguage = keyLanguage;
-    }
-
-    public EncodingHandler getEncodingHandler() {
-        return encodingHandler;
-    }
-
-    public void setEncodingHandler(EncodingHandler encodingHandler) {
-        this.encodingHandler = encodingHandler;
+    public boolean isEncodingCorrect(){
+        boolean isCorrect = false;
+        try(InputStream inputStream = new FileInputStream(file)){
+            byte[] bytes = new byte[inputStream.available()];
+            inputStream.read(bytes);
+            isCorrect = encodingHandler.isArrayOfBytesEncodingCorrect(bytes);
+        }catch (IOException exception){
+            exception.printStackTrace();
+        }
+        return isCorrect;
     }
 }

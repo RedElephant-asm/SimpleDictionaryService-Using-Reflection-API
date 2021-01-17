@@ -1,15 +1,12 @@
 package org.SimpleDictionaryService.handlers;
 
-import com.sun.java_cup.internal.runtime.Symbol;
 import org.SimpleDictionaryService.Encoding;
 import org.SimpleDictionaryService.Language;
-import org.SimpleDictionaryService.SymbolTemplate;
+import org.SimpleDictionaryService.Symbol;
 
 import java.util.*;
-import java.util.regex.Pattern;
 
 import static org.SimpleDictionaryService.handlers.BinaryHandler.getBinaryString;
-import static org.SimpleDictionaryService.handlers.BinaryHandler.getInteger;
 
 public class EncodingHandler {
 
@@ -21,37 +18,26 @@ public class EncodingHandler {
         this.language = language;
     }
 
-    public boolean isSymbolsEncodingCorrect(byte... byteSequence){
-        if (this.language.isBelongsToTheLanguage(byteSequence) &&
-                this.encoding.findTemplateByByteCount(byteSequence.length).matches(getBinaryString(byteSequence))){
-            return true;
-        }
-        return false;
+    public boolean isSymbolCorrect(Symbol symbol){
+        System.out.println((char) symbol.getValue());
+        return language.isBelongsToTheLanguage(symbol) && encoding.isBelongsToTheEncoding(symbol);
     }
 
-    public int isArrayOfSymbolsEncodingCorrect(byte[] bytes) {
-        ArrayList<Integer> symbolLengths = new ArrayList<>(this.language.getSymbolPossibleLengths());
-        int countOfRelevantBytes = 0;
+    public boolean isArrayOfBytesEncodingCorrect(byte[] bytes) {
+        boolean isCorrect = false;
+        ArrayList<Integer> symbolLengths = new ArrayList<>(encoding.getSymbolLengths());
+        float countOfRelevantBytes = 0;
         for(int byteNumber = 0; byteNumber < bytes.length;){
-            for(int lengthNumber = 0; lengthNumber < symbolLengths.size(); lengthNumber++){
-                if(isSymbolsEncodingCorrect(Arrays.copyOfRange(bytes, byteNumber, byteNumber + symbolLengths.get(lengthNumber)))){
-                    byteNumber += symbolLengths.get(lengthNumber);
-                    countOfRelevantBytes += symbolLengths.get(lengthNumber);
+            for (Integer symbolLength : symbolLengths) {
+                isCorrect = isSymbolCorrect(new Symbol(Arrays.copyOfRange(bytes, byteNumber, byteNumber + symbolLength), this.language, this.encoding));
+                if (isCorrect) {
+                    byteNumber += symbolLength;
+                    countOfRelevantBytes += symbolLength;
                     break;
-                }else {
-                    byteNumber++;
                 }
             }
-//            theoreticalSymbolLength = symbolLengths.stream()
-//                    .filter(length -> Pattern.matches(this.encoding.findTemplateByByteCount(length).getTemplate(),
-//                            getBinaryString(Arrays.copyOfRange(bytes, byteNumber[0], byteNumber[0] + length)))).findAny();
-//            if(theoreticalSymbolLength.isPresent()){
-//                byteNumber[0] += theoreticalSymbolLength.get();
-//                countOfRelevantBytes += theoreticalSymbolLength.get();
-//            }else byteNumber[0]++;
+            if (!isCorrect) byteNumber++;
         }
-        return countOfRelevantBytes;
+        return (countOfRelevantBytes / bytes.length) > Encoding.MINIMAL_RATIO;
     }
-
-
 }

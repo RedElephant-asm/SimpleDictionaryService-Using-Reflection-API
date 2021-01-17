@@ -6,6 +6,7 @@ import org.SimpleDictionaryService.handlers.ReflectionHandler;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.SimpleDictionaryService.handlers.BinaryHandler.getBinaryString;
 import static org.SimpleDictionaryService.handlers.BinaryHandler.getNumberLength;
 
 public enum Language {
@@ -22,32 +23,19 @@ public enum Language {
         this.unicodeCharacterIntervals = unicodeCharacterIntervals;
     }
 
-    public List<Integer> getSymbolPossibleLengths(){
-        ArrayList<Integer> possibleLengths = new ArrayList<>();
-        for (int[] interval: this.unicodeCharacterIntervals){
-            if (possibleLengths.stream().noneMatch(existingInterval -> existingInterval == getNumberLength(interval[0]))){
-                possibleLengths.add(getNumberLength(interval[0]));
-            }
-            if (possibleLengths.stream().noneMatch(existingInterval -> existingInterval == getNumberLength(interval[1]))){
-                possibleLengths.add(getNumberLength(interval[1]));
-            }
-        }
-        return possibleLengths;
-    }
 
-    public boolean isBelongsToTheLanguage(byte... symbolBytes){
-        int unicodeCharacterNumber = BinaryHandler.getInteger(symbolBytes);
-        System.out.println((char)unicodeCharacterNumber);
+    public boolean isBelongsToTheLanguage(Symbol symbol){
+        int unicodeCharacterNumber = symbol.getValue();
         for (int[] interval: this.unicodeCharacterIntervals){
-            if ((unicodeCharacterNumber >= interval[0] && unicodeCharacterNumber <= interval[1]) || isBelongToTheASCII(symbolBytes)){
+            if ((unicodeCharacterNumber >= interval[0] && unicodeCharacterNumber <= interval[1]) || isBelongToTheASCII(symbol)){
                 return true;
             }
         }
         return false;
     }
 
-    public static boolean isBelongToTheASCII(byte... symbolBytes){
-        int asciiCharacterNumber = BinaryHandler.getInteger(symbolBytes);
+    public static boolean isBelongToTheASCII(Symbol symbol){
+        int asciiCharacterNumber = BinaryHandler.getInteger(symbol.getBytes());
         return asciiCharacterNumber >= 0 && asciiCharacterNumber < 128;
     }
 
