@@ -27,16 +27,16 @@ public enum Language {
     public boolean isBelongsToTheLanguage(Symbol symbol){
         int unicodeCharacterNumber = symbol.getValue();
         for (int[] interval: this.unicodeCharacterIntervals){
-            if ((unicodeCharacterNumber >= interval[0] && unicodeCharacterNumber <= interval[1]) || isBelongToTheASCII(symbol)){
+            if ((unicodeCharacterNumber >= interval[0] && unicodeCharacterNumber <= interval[1]) || isASCIIServiceSymbol(symbol)){
                 return true;
             }
         }
         return false;
     }
 
-    public static boolean isBelongToTheASCII(Symbol symbol){
+    public static boolean isASCIIServiceSymbol(Symbol symbol){
         int asciiCharacterNumber = BinaryHandler.getInteger(symbol.getBytes());
-        return asciiCharacterNumber >= 0 && asciiCharacterNumber < 128;
+        return asciiCharacterNumber >= 0 && asciiCharacterNumber < 65;
     }
 
     public int getWordLength() {

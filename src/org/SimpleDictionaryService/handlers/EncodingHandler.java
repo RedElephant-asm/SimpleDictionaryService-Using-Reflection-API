@@ -6,8 +6,6 @@ import org.SimpleDictionaryService.Symbol;
 
 import java.util.*;
 
-import static org.SimpleDictionaryService.handlers.BinaryHandler.getBinaryString;
-
 public class EncodingHandler {
 
     private Encoding encoding;

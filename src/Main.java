@@ -16,7 +16,7 @@ public class Main {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        Dictionary dictionary = new Dictionary(filepath, Language.UNICODE_RUSSIAN, Language.UNICODE_FOURLATINLETTERS, Encoding.UTF16);
+        Dictionary dictionary = new Dictionary(filepath, Language.UNICODE_RUSSIAN, Language.UNICODE_FOURLATINLETTERS, Encoding.UTF8);
         DictionaryService dictionaryService = new DictionaryService(dictionary);
 
     }

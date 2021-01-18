@@ -8,7 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class Dictionary{
+public class Dictionary extends File{
 
     public static double WORD_ENCODING_MINIMAL_RATIO    = 0.5 * Encoding.MINIMAL_RATIO;
     public static double KEY_ENCODING_MINIMAL_RATIO     = 0.5 * Encoding.MINIMAL_RATIO;
@@ -16,12 +16,10 @@ public class Dictionary{
     private Language wordLanguage;
     private Language keyLanguage;
     private Encoding encoding;
-    private File file;
 
     public Dictionary(String fullFileName, Language wordLanguage, Language keyLanguage, Encoding fileEncoding)
-            throws WrongEncodingException
     {
-        this.file = new File(fullFileName);
+        super(fullFileName);
         this.wordLanguage = wordLanguage;
         this.keyLanguage = keyLanguage;
         this.encoding = fileEncoding;
@@ -35,7 +33,7 @@ public class Dictionary{
 
     private byte[] readAllBytes(){
         byte[] bytes = new byte[]{};
-        try(InputStream inputStream = new FileInputStream(file)){
+        try(InputStream inputStream = new FileInputStream(this)){
             bytes = new byte[inputStream.available()];
             inputStream.read(bytes);
         }catch (IOException exception){
@@ -46,11 +44,23 @@ public class Dictionary{
 
     private void isWordEncodingCorrect(byte[] bytes){
         if(!EncodingHandler.isArrayOfBytesEncodingCorrect(bytes, encoding, wordLanguage, WORD_ENCODING_MINIMAL_RATIO))
-            throw new WrongEncodingException(encoding.name(), file.getName(), wordLanguage.name());
+            throw new WrongEncodingException(encoding.name(), this.getPath(), wordLanguage.name());
     }
 
     private void isKeyEncodingCorrect(byte[] bytes){
         if(!EncodingHandler.isArrayOfBytesEncodingCorrect(bytes, encoding, keyLanguage, KEY_ENCODING_MINIMAL_RATIO))
-            throw new WrongEncodingException(encoding.name(), file.getName(), keyLanguage.name());
+            throw new WrongEncodingException(encoding.name(), this.getPath(), keyLanguage.name());
+    }
+
+    public Language getWordLanguage() {
+        return wordLanguage;
+    }
+
+    public Language getKeyLanguage() {
+        return keyLanguage;
+    }
+
+    public Encoding getEncoding() {
+        return encoding;
     }
 }

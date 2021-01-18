@@ -21,7 +21,7 @@ public enum Encoding {
                      new SymbolTemplate("0[01]{7}", 1));
 
     public static final int UNICODE_TABLE_LENGTH = 0x110000;
-    public static final double MINIMAL_RATIO = 0.8;
+    public static final double MINIMAL_RATIO = 0.7;
 
     private final SymbolTemplate[] templates;
 
