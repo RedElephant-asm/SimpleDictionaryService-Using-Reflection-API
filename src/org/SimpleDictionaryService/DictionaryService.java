@@ -10,26 +10,25 @@ import java.io.*;
 public class DictionaryService {
 
     private Dictionary dictionary;
-    private InputStream inputStream;
-    private OutputStream outputStream;
 
     public DictionaryService(Dictionary dictionary){
         this.dictionary = dictionary;
+        dictionary.isEncodingsCorrect();
     }
 
-    public void createInDictionary(){
-
-    }
-
-    public void readFromDictionary(){
+    public void createRecord(){
 
     }
 
-    public void updateInDictionary(){
+    public void readRecord(){
 
     }
 
-    public void deleteFromDictionary(){
+    public void updateRecord(){
+
+    }
+
+    public void deleteRecord(){
 
     }
 

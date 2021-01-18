@@ -10,12 +10,12 @@ import java.io.InputStream;
 
 public class Dictionary{
 
+    public static double WORD_ENCODING_MINIMAL_RATIO    = 0.5 * Encoding.MINIMAL_RATIO;
+    public static double KEY_ENCODING_MINIMAL_RATIO     = 0.5 * Encoding.MINIMAL_RATIO;
+
     private Language wordLanguage;
-
     private Language keyLanguage;
-
-    private EncodingHandler encodingHandler;
-
+    private Encoding encoding;
     private File file;
 
     public Dictionary(String fullFileName, Language wordLanguage, Language keyLanguage, Encoding fileEncoding)
@@ -24,22 +24,33 @@ public class Dictionary{
         this.file = new File(fullFileName);
         this.wordLanguage = wordLanguage;
         this.keyLanguage = keyLanguage;
-        this.encodingHandler = new EncodingHandler(fileEncoding, wordLanguage);
-        if(!this.isEncodingCorrect()){
-            throw new WrongEncodingException(fileEncoding.name(), fullFileName);
-        }
-
+        this.encoding = fileEncoding;
     }
 
-    public boolean isEncodingCorrect(){
-        boolean isCorrect = false;
+    public void isEncodingsCorrect(){
+        byte[] bytes = readAllBytes();
+        isWordEncodingCorrect(bytes);
+        isKeyEncodingCorrect(bytes);
+    }
+
+    private byte[] readAllBytes(){
+        byte[] bytes = new byte[]{};
         try(InputStream inputStream = new FileInputStream(file)){
-            byte[] bytes = new byte[inputStream.available()];
+            bytes = new byte[inputStream.available()];
             inputStream.read(bytes);
-            isCorrect = encodingHandler.isArrayOfBytesEncodingCorrect(bytes);
         }catch (IOException exception){
             exception.printStackTrace();
         }
-        return isCorrect;
+        return bytes;
+    }
+
+    private void isWordEncodingCorrect(byte[] bytes){
+        if(!EncodingHandler.isArrayOfBytesEncodingCorrect(bytes, encoding, wordLanguage, WORD_ENCODING_MINIMAL_RATIO))
+            throw new WrongEncodingException(encoding.name(), file.getName(), wordLanguage.name());
+    }
+
+    private void isKeyEncodingCorrect(byte[] bytes){
+        if(!EncodingHandler.isArrayOfBytesEncodingCorrect(bytes, encoding, keyLanguage, KEY_ENCODING_MINIMAL_RATIO))
+            throw new WrongEncodingException(encoding.name(), file.getName(), keyLanguage.name());
     }
 }

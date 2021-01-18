@@ -18,18 +18,40 @@ public class EncodingHandler {
         this.language = language;
     }
 
-    public boolean isSymbolCorrect(Symbol symbol){
-        System.out.println((char) symbol.getValue());
-        return language.isBelongsToTheLanguage(symbol) && encoding.isBelongsToTheEncoding(symbol);
+    public static boolean isSymbolCorrect(Symbol symbol){
+        return symbol.getLanguage().isBelongsToTheLanguage(symbol) && symbol.getEncoding().isBelongsToTheEncoding(symbol);
     }
 
     public boolean isArrayOfBytesEncodingCorrect(byte[] bytes) {
+        return isArrayOfBytesEncodingCorrect(bytes, encoding, language);
+    }
+
+    public static boolean isArrayOfBytesEncodingCorrect(byte[] bytes, Encoding encoding, Language language){
+        return ((double)getCountOfRelevantBytes(bytes, encoding, language) / bytes.length) > Encoding.MINIMAL_RATIO;
+    }
+
+    public int getCountOfRelevantBytes(byte[] bytes){
+        return getCountOfRelevantBytes(bytes, encoding, language);
+    }
+
+    public boolean isArrayOfBytesEncodingCorrect(byte[] bytes, double ratio){
+        return isArrayOfBytesEncodingCorrect(bytes, encoding, language, ratio);
+    }
+
+    public static boolean isArrayOfBytesEncodingCorrect(byte[] bytes, Encoding encoding, Language language, double ratio){
+        return (double)getCountOfRelevantBytes(bytes, encoding, language) / bytes.length > ratio;
+    }
+
+    public static int getCountOfRelevantBytes(byte[] bytes, Encoding encoding, Language language){
         boolean isCorrect = false;
         ArrayList<Integer> symbolLengths = new ArrayList<>(encoding.getSymbolLengths());
-        float countOfRelevantBytes = 0;
-        for(int byteNumber = 0; byteNumber < bytes.length;){
+        int countOfRelevantBytes = 0;
+        int byteNumber;
+        for(byteNumber = 0; byteNumber < bytes.length;){
             for (Integer symbolLength : symbolLengths) {
-                isCorrect = isSymbolCorrect(new Symbol(Arrays.copyOfRange(bytes, byteNumber, byteNumber + symbolLength), this.language, this.encoding));
+                if (byteNumber + symbolLength < bytes.length){
+                    isCorrect = isSymbolCorrect(new Symbol(Arrays.copyOfRange(bytes, byteNumber, byteNumber + symbolLength), language, encoding));
+                }
                 if (isCorrect) {
                     byteNumber += symbolLength;
                     countOfRelevantBytes += symbolLength;
@@ -38,6 +60,6 @@ public class EncodingHandler {
             }
             if (!isCorrect) byteNumber++;
         }
-        return (countOfRelevantBytes / bytes.length) > Encoding.MINIMAL_RATIO;
+        return countOfRelevantBytes;
     }
 }

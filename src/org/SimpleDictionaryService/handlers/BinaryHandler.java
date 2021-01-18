@@ -13,7 +13,6 @@ public abstract class BinaryHandler {
         int result = 0;
         for (int byteNumber = 0; byteNumber < bytes.length; byteNumber++){
             result += (bytes[byteNumber] & 0xFF) << (8 * (bytes.length - byteNumber - 1));
-            //System.out.println(result + " : ["+ getBinaryString(result) + " ]");
         }
         return result;
     }

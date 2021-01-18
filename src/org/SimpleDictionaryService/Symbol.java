@@ -4,13 +4,15 @@ import org.SimpleDictionaryService.handlers.BinaryHandler;
 
 public class Symbol {
     private byte[] bytes;
+    private Language language;
+    private Encoding encoding;
     private String[] serviceBitSets;
-    private int[][] disorderedServiceBytes;
 
     public Symbol(byte[] bytes, Language language, Encoding encoding){
         this.bytes = bytes;
+        this.language = language;
+        this.encoding = encoding;
         serviceBitSets = encoding.findTemplateByByteCount(this.bytes.length).getServiceBitSets();
-        disorderedServiceBytes = encoding.findTemplateByByteCount(this.bytes.length).getDisorderedServiceByteNumbers();
     }
 
     public int getValue(){
@@ -25,16 +27,21 @@ public class Symbol {
     }
 
     public boolean isSymbolHaveServiceBitSets(){
-        return this.serviceBitSets.length == 0;
+        return serviceBitSets.length == 0;
     }
 
+
     public boolean isSymbolHaveDisorderedServiceBytes(){
-        return disorderedServiceBytes.length > 0;
+        return getDisorderedServiceBytes().length > 0;
+    }
+
+    private int[][] getDisorderedServiceBytes(){
+        return encoding.findTemplateByByteCount(this.bytes.length).getDisorderedServiceByteNumbers();
     }
 
     public int getSymbolValueByDisorderedServiceBytes(){
         String binaryString = "";
-        for (int[] disorderedServiceByte : disorderedServiceBytes) {
+        for (int[] disorderedServiceByte : getDisorderedServiceBytes()) {
             binaryString += BinaryHandler.getBinaryString(bytes[disorderedServiceByte[0]])
                     .replaceFirst(serviceBitSets[disorderedServiceByte[1]], "");
         }
@@ -55,5 +62,13 @@ public class Symbol {
 
     public int getLength(){
         return this.bytes.length;
+    }
+
+    public Language getLanguage() {
+        return language;
+    }
+
+    public Encoding getEncoding() {
+        return encoding;
     }
 }
