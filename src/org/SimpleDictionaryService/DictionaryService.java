@@ -6,6 +6,7 @@ import org.SimpleDictionaryService.throwable.WrongEncodingException;
 import java.io.*;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -17,76 +18,101 @@ public class DictionaryService {
 
     public DictionaryService(Dictionary dictionary){
         this.dictionary = dictionary;
-        dictionary.isEncodingsCorrect();
-
-
-        System.out.println(this.dictionary.getPath());
-        HashSet<String> data = (HashSet<String>)readAll();
-        for (String record : data){
-            System.out.println(record);
-        }
+        dictionary.isEncodingCorrect();
     }
 
-    public void createRecord(String key, String word){
-        String record = formatRecord(key, word);
-        if(isRecordCorrect(record)){
-
-        }
-    }
-
-    public void readRecord(){
-
-    }
-
-    public void updateRecord(){
-
-    }
-
-    public void deleteRecord(){
-
-    }
-
-    public Set<String> readAll(){
-        Set<String> data = new LinkedHashSet<>();
-        try(LineNumberReader lineReader = new LineNumberReader(new FileReader(dictionary))){
-            String record = lineReader.readLine();
-            while (record != null){
-                data.add(record);
-                record = lineReader.readLine();
+    public void addRecord(Record record){
+        if(record.isEncodingCorrect()){
+            BufferedWriter outputStream = getOutputStream(true);
+            try {
+                outputStream.write(record.toString());
+            } catch (IOException exception) {
+                exception.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+            closeStream(outputStream);
         }
+    }
+
+    public Optional<Record> readRecord(String key){
+        return readAll().stream().filter(record -> record.getKey().equals(key)).findAny();
+    }
+
+    public boolean updateRecord(String key, Record newRecord){
+        Set<Record> data = readAll();
+        data.stream().filter(record -> record.getKey().equals(key)).forEach(record -> {
+            record.setKey(newRecord.getKey());
+            record.setWord(newRecord.getWord());
+        });
+        saveChanges(data);
+        return false;
+    }
+
+    public boolean deleteRecord(String key){
+        Set<Record> data = readAll();
+        Optional<Record> toBeDeleted = data.stream().filter(record -> record.getKey().equals(key)).findAny();
+        boolean isDeleted = data.remove(toBeDeleted.isPresent() ? toBeDeleted.get() :
+                new Record("Mock;Record", dictionary.getEncoding(), dictionary.getKeyLanguage(), dictionary.getWordLanguage()));
+        saveChanges(data);
+        return isDeleted;
+    }
+
+    public Set<Record> readAll(){
+        Set<Record> data = new LinkedHashSet<>();
+        LineNumberReader lineReader = getInputStream();
+        try {
+            String recordString = lineReader.readLine();
+            while (recordString != null){
+                data.add(new Record(recordString, dictionary.getEncoding(), dictionary.getKeyLanguage(), dictionary.getWordLanguage()));
+                recordString = lineReader.readLine();
+            }
+        }catch (IOException exception){
+            exception.printStackTrace();
+        }
+        closeStream(lineReader);
         return data;
     }
 
-
-    public boolean isRecordCorrect(String record) {
-        return isRecordCorrect(record, dictionary.getEncoding(), dictionary.getKeyLanguage(), dictionary.getWordLanguage());
+    private LineNumberReader getInputStream(){
+        LineNumberReader reader = null;
+        try {
+            reader = new LineNumberReader(new FileReader(dictionary));
+        }catch (FileNotFoundException exception){
+            exception.printStackTrace();
+        }
+        return reader;
     }
 
-    public static boolean isRecordCorrect(String record, Encoding encoding, Language keyLanguage, Language wordLanguage){
-        return EncodingHandler.isArrayOfBytesEncodingCorrect(record.getBytes(), encoding, keyLanguage, Dictionary.KEY_ENCODING_MINIMAL_RATIO)
-                && EncodingHandler.isArrayOfBytesEncodingCorrect(record.getBytes(), encoding, wordLanguage, Dictionary.WORD_ENCODING_MINIMAL_RATIO);
+    private BufferedWriter getOutputStream(boolean append){
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(dictionary, append));
+        }catch (IOException exception){
+            exception.printStackTrace();
+        }
+        return writer;
     }
 
-    public static String formatRecord(String key, String word){
-        return key.concat(";").concat(word).concat("\n");
+    public void closeStream(Closeable stream){
+        try {
+            stream.close();
+        }catch (IOException exception){
+            exception.printStackTrace();
+        }
     }
 
-    public void getInputStream(){
-
+    public void saveChanges(Set<Record> data){
+        BufferedWriter outputStream = getOutputStream(false);
+        try {
+            for (Record record : data){
+                outputStream.write(record.toString());
+            }
+        }catch (IOException exception){
+            exception.printStackTrace();
+        }
+        closeStream(outputStream);
     }
 
-    public void getOutputStream(){
-
-    }
-
-    public Dictionary getDictionary() {
-        return dictionary;
-    }
-
-    public void setDictionary(Dictionary dictionary) {
-        this.dictionary = dictionary;
+    public Record createRecord(String key, String word){
+        return new Record(key, word, dictionary.getEncoding(), dictionary.getKeyLanguage(), dictionary.getWordLanguage());
     }
 }

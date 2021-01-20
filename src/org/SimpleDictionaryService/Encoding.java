@@ -1,5 +1,6 @@
 package org.SimpleDictionaryService;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public enum Encoding {
                      new SymbolTemplate("0[01]{7}", 1));
 
     public static final int UNICODE_TABLE_LENGTH = 0x110000;
-    public static final double MINIMAL_RATIO = 0.7;
+    public static final double MINIMAL_RATIO = 0.8;
 
     private final SymbolTemplate[] templates;
 
@@ -57,6 +58,15 @@ public enum Encoding {
             }
         }
         return possibleLengths;
+    }
+
+    public String encodeString(String string){
+        try {
+            return new String(string.getBytes("UTF-8"), this.getCharsetName());
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return string;
     }
 
     public SymbolTemplate[] getTemplates() {

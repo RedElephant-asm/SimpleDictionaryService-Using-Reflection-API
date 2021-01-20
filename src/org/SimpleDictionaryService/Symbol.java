@@ -2,7 +2,7 @@ package org.SimpleDictionaryService;
 
 import org.SimpleDictionaryService.handlers.BinaryHandler;
 
-public class Symbol {
+public class Symbol implements Encoded{
     private byte[] bytes;
     private Language language;
     private Encoding encoding;
@@ -13,6 +13,11 @@ public class Symbol {
         this.language = language;
         this.encoding = encoding;
         serviceBitSets = encoding.findTemplateByByteCount(this.bytes.length).getServiceBitSets();
+    }
+
+    @Override
+    public boolean isEncodingCorrect() {
+        return language.isBelongsToTheLanguage(this) && encoding.isBelongsToTheEncoding(this);
     }
 
     public int getValue(){

@@ -16,10 +16,6 @@ public class EncodingHandler {
         this.language = language;
     }
 
-    public static boolean isSymbolCorrect(Symbol symbol){
-        return symbol.getLanguage().isBelongsToTheLanguage(symbol) && symbol.getEncoding().isBelongsToTheEncoding(symbol);
-    }
-
     public boolean isArrayOfBytesEncodingCorrect(byte[] bytes) {
         return isArrayOfBytesEncodingCorrect(bytes, encoding, language);
     }
@@ -44,11 +40,11 @@ public class EncodingHandler {
         boolean isCorrect = false;
         ArrayList<Integer> symbolLengths = new ArrayList<>(encoding.getSymbolLengths());
         int countOfRelevantBytes = 0;
-        int byteNumber;
-        for(byteNumber = 0; byteNumber < bytes.length;){
+        for(int byteNumber = 0; byteNumber < bytes.length;){
             for (Integer symbolLength : symbolLengths) {
                 if (byteNumber + symbolLength < bytes.length){
-                    isCorrect = isSymbolCorrect(new Symbol(Arrays.copyOfRange(bytes, byteNumber, byteNumber + symbolLength), language, encoding));
+                    Symbol currentSymbol = new Symbol(Arrays.copyOfRange(bytes, byteNumber, byteNumber + symbolLength), language, encoding);
+                    isCorrect = currentSymbol.isEncodingCorrect();
                 }
                 if (isCorrect) {
                     byteNumber += symbolLength;
