@@ -16,6 +16,8 @@ public class DictionaryService {
 
     private Dictionary dictionary;
 
+    public DictionaryService(){}
+
     public DictionaryService(Dictionary dictionary){
         this.dictionary = dictionary;
         dictionary.isEncodingCorrect();
@@ -25,7 +27,7 @@ public class DictionaryService {
         if(record.isEncodingCorrect()){
             BufferedWriter outputStream = getOutputStream(true);
             try {
-                outputStream.write(record.toString());
+                outputStream.write(record.toString().concat("\n"));
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
@@ -62,7 +64,9 @@ public class DictionaryService {
         try {
             String recordString = lineReader.readLine();
             while (recordString != null){
-                data.add(new Record(recordString, dictionary.getEncoding(), dictionary.getKeyLanguage(), dictionary.getWordLanguage()));
+                if (!recordString.isEmpty() && recordString.split(";").length == 2){
+                    data.add(new Record(recordString, dictionary.getEncoding(), dictionary.getKeyLanguage(), dictionary.getWordLanguage()));
+                }
                 recordString = lineReader.readLine();
             }
         }catch (IOException exception){
@@ -114,5 +118,10 @@ public class DictionaryService {
 
     public Record createRecord(String key, String word){
         return new Record(key, word, dictionary.getEncoding(), dictionary.getKeyLanguage(), dictionary.getWordLanguage());
+    }
+
+    public void setDictionary(Dictionary dictionary){
+        this.dictionary = dictionary;
+        dictionary.isEncodingCorrect();
     }
 }

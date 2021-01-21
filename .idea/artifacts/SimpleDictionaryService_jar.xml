@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SimpleDictionaryService:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/SimpleDictionaryService</output-path>
+    <root id="archive" name="SimpleDictionaryService.jar">
+      <element id="module-output" name="SimpleDictionaryService" />
+    </root>
+  </artifact>
+</component>
