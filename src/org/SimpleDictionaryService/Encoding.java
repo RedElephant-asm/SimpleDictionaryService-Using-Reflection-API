@@ -73,9 +73,12 @@ public enum Encoding {
     }
 
     public static Encoding getEncodingByName(String encodingName){
-        if(Arrays.stream(Encoding.values()).anyMatch(encoding -> encoding.name().toLowerCase().equals(encodingName))){
-            return Arrays.stream(Encoding.values()).filter(encoding -> encoding.name().toLowerCase().equals(encodingName)).findFirst().get();
-        }else return UNKNOWN_ENCODING;
+        for (Encoding encoding : Encoding.values()) {
+            if (encoding.name().toLowerCase().equals(encodingName)){
+                return encoding;
+            }
+        }
+        return UNKNOWN_ENCODING;
     }
 
     public SymbolTemplate[] getTemplates() {

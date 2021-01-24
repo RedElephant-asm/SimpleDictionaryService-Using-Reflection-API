@@ -2,6 +2,7 @@ package org.SimpleDictionaryService;
 
 import org.SimpleDictionaryService.handlers.BinaryHandler;
 import org.SimpleDictionaryService.handlers.ReflectionHandler;
+import org.omg.CORBA.UNKNOWN;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,8 @@ public enum Language {
 
     UNICODE_FOURLATINLETTERS   (4, new int[]{65, 90}, new int[]{97, 122}),
     UNICODE_FIVEDIGITS         (5, new int[]{48, 57}),
-    UNICODE_RUSSIAN            (20, new int[]{1040, 1103}, new int[]{1025, 1025});
+    UNICODE_RUSSIAN            (20, new int[]{1040, 1103}, new int[]{1025, 1025}),
+    UNKNOWN_LANGUAGE           (0);
 
     private final int[][] unicodeCharacterIntervals;
     private final int wordLength;
@@ -37,6 +39,15 @@ public enum Language {
     public static boolean isASCIIServiceSymbol(Symbol symbol){
         int asciiCharacterNumber = BinaryHandler.getInteger(symbol.getBytes());
         return asciiCharacterNumber >= 0 && asciiCharacterNumber < 65;
+    }
+
+    public static Language getLanguageByName(String languageName){
+        for (Language language : Language.values()) {
+            if(language.name().toLowerCase().equals(languageName)){
+                return language;
+            }
+        }
+        return UNKNOWN_LANGUAGE;
     }
 
     public int getWordLength() {
