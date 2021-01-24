@@ -124,4 +124,8 @@ public class DictionaryService {
         this.dictionary = dictionary;
         dictionary.isEncodingCorrect();
     }
+
+    public Dictionary getDictionary() {
+        return dictionary;
+    }
 }
