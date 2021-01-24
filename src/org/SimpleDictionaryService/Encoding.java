@@ -24,8 +24,9 @@ public enum Encoding {
 
     UNKNOWN_ENCODING("UNKNOWN"){};
 
-    public static final int UNICODE_TABLE_LENGTH = 0x110000;
-    public static final double MINIMAL_RATIO = 0.8;
+    public static final int         UNICODE_TABLE_LENGTH = 0x110000;
+    public static final double      MINIMAL_RATIO = 0.8;
+    public static final int         MINIMAL_FILE_LENGTH = 50;
 
     private final SymbolTemplate[] templates;
 
@@ -79,6 +80,10 @@ public enum Encoding {
             }
         }
         return UNKNOWN_ENCODING;
+    }
+
+    public static boolean isEncodingExist(String encodingName){
+        return getEncodingByName(encodingName) != UNKNOWN_ENCODING;
     }
 
     public SymbolTemplate[] getTemplates() {

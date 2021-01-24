@@ -4,10 +4,7 @@ import org.SimpleDictionaryService.handlers.EncodingHandler;
 import org.SimpleDictionaryService.throwable.WrongEncodingException;
 
 import java.io.*;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author RedElephant
@@ -118,6 +115,10 @@ public class DictionaryService {
 
     public Record createRecord(String key, String word){
         return new Record(key, word, dictionary.getEncoding(), dictionary.getKeyLanguage(), dictionary.getWordLanguage());
+    }
+
+    public boolean isDictionarySelected(){
+        return !Objects.isNull(dictionary);
     }
 
     public void setDictionary(Dictionary dictionary){

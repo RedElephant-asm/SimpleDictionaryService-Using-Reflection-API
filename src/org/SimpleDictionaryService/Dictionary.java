@@ -25,6 +25,9 @@ public class Dictionary extends File implements Encoded{
     @Override
     public boolean isEncodingCorrect(){
         byte[] bytes = readAllBytes();
+        if (bytes.length < Encoding.MINIMAL_FILE_LENGTH){
+            return false;
+        }
         try {
             isWordEncodingCorrect(bytes);
             isKeyEncodingCorrect(bytes);
