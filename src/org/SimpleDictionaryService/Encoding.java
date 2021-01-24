@@ -2,6 +2,7 @@ package org.SimpleDictionaryService;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.SimpleDictionaryService.handlers.BinaryHandler.getBinaryString;
@@ -9,7 +10,7 @@ import static org.SimpleDictionaryService.handlers.BinaryHandler.getBinaryString
 public enum Encoding {
 
     UTF8            ("UTF-8",
-                     new SymbolTemplate("0[01]{7}", 1), // needs serving-byte intervals
+                     new SymbolTemplate("0[01]{7}", 1),
                      new SymbolTemplate("110[01]{5}10[01]{6}", 2),
                      new SymbolTemplate("1110[01]{4}10[01]{6}10[01]{6}", 3),
                      new SymbolTemplate("11110[01]{3}10[01]{6}10[01]{6}10[01]{6}", 4)),
@@ -19,7 +20,9 @@ public enum Encoding {
                      new SymbolTemplate("1101100[01]{9}1101111[01]{9}", 4, new int[]{0, 0}, new int[]{2, 1})),
 
     ASCII           ("ASCII",
-                     new SymbolTemplate("0[01]{7}", 1));
+                     new SymbolTemplate("0[01]{7}", 1)),
+
+    UNKNOWN_ENCODING("UNKNOWN"){};
 
     public static final int UNICODE_TABLE_LENGTH = 0x110000;
     public static final double MINIMAL_RATIO = 0.8;
@@ -67,6 +70,12 @@ public enum Encoding {
             e.printStackTrace();
         }
         return string;
+    }
+
+    public static Encoding getEncodingByName(String encodingName){
+        if(Arrays.stream(Encoding.values()).anyMatch(encoding -> encoding.name().toLowerCase().equals(encodingName))){
+            return Arrays.stream(Encoding.values()).filter(encoding -> encoding.name().toLowerCase().equals(encodingName)).findFirst().get();
+        }else return UNKNOWN_ENCODING;
     }
 
     public SymbolTemplate[] getTemplates() {
