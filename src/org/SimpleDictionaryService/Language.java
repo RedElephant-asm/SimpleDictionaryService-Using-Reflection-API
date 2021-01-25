@@ -1,20 +1,19 @@
 package org.SimpleDictionaryService;
 
 import org.SimpleDictionaryService.handlers.BinaryHandler;
-import org.SimpleDictionaryService.throwable.InvalidWordLengthException;
 
 public enum Language {
 
-    UNICODE_FOURLATINLETTERS   (4, new int[]{65, 90}, new int[]{97, 122}),
-    UNICODE_FIVEDIGITS         (5, new int[]{48, 57}),
-    UNICODE_RUSSIAN            (20, new int[]{1040, 1103}, new int[]{1025, 1025}),
+    UNICODE_FOURLATINLETTERS   (15, new int[]{65, 90}, new int[]{97, 122}),
+    UNICODE_FIVEDIGITS         (15, new int[]{48, 57}),
+    UNICODE_RUSSIAN            (15, new int[]{1040, 1103}, new int[]{1025, 1025}),
     UNKNOWN_LANGUAGE           (0);
 
     private final int[][] unicodeCharacterIntervals;
-    private final int wordLength;
+    private final int maxWordLength;
 
-    Language(final int wordLength, final int[]... unicodeCharacterIntervals){
-        this.wordLength = wordLength;
+    Language(final int maxWordLength, final int[]... unicodeCharacterIntervals){
+        this.maxWordLength = maxWordLength;
         this.unicodeCharacterIntervals = unicodeCharacterIntervals;
     }
 
@@ -48,11 +47,11 @@ public enum Language {
     }
 
     public boolean isWordLengthCorrect(String word){
-        return word.length() == wordLength;
+        return word.length() <= maxWordLength;
     }
 
     public int getWordLength() {
-        return wordLength;
+        return maxWordLength;
     }
 
     public int[][] getUnicodeCharacterIntervals() {
