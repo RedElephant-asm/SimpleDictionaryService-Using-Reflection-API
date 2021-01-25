@@ -16,15 +16,14 @@ public class DictionaryService {
     public DictionaryService(){}
 
     public DictionaryService(Dictionary dictionary){
-        this.dictionary = dictionary;
-        dictionary.isEncodingCorrect();
+        setDictionary(dictionary);
     }
 
     public void addRecord(Record record){
-        if(record.isEncodingCorrect()){
+        if(record.isCorrect()){
             BufferedWriter outputStream = getOutputStream(true);
             try {
-                outputStream.write(record.toString().concat("\n"));
+                outputStream.write(record.toString());
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
@@ -122,8 +121,9 @@ public class DictionaryService {
     }
 
     public void setDictionary(Dictionary dictionary){
-        this.dictionary = dictionary;
-        dictionary.isEncodingCorrect();
+        if (!dictionary.isHaveMinLength() || dictionary.isEncodingCorrect()){
+            this.dictionary = dictionary;
+        }
     }
 
     public Dictionary getDictionary() {

@@ -1,6 +1,9 @@
 package org.SimpleDictionaryService;
 
 import org.SimpleDictionaryService.handlers.EncodingHandler;
+import org.SimpleDictionaryService.throwable.InvalidWordLengthException;
+import org.SimpleDictionaryService.throwable.OriginSubject;
+import org.SimpleDictionaryService.throwable.WrongEncodingException;
 
 public class Record implements Encoded{
     private String key;
@@ -28,17 +31,46 @@ public class Record implements Encoded{
         return String.format("%s;%s\n", key, word);
     }
 
+    public boolean isCorrect(){
+        return isEncodingCorrect() && isLengthCorrect();
+    }
+
+    public boolean isLengthCorrect(){
+        try {
+            if (!keyLanguage.isWordLengthCorrect(key)){
+                throw new InvalidWordLengthException(key);
+            }else if(!wordLanguage.isWordLengthCorrect(word)){
+                throw new InvalidWordLengthException(word);
+            }
+        }catch (InvalidWordLengthException exception){
+            exception.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public boolean isEncodingCorrect() {
-        return isKeyEncodingCorrect() && isWordEncodingCorrect();
+        try {
+            isKeyEncodingCorrect();
+            isWordEncodingCorrect();
+        }catch (WrongEncodingException exception){
+            exception.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
-    public boolean isKeyEncodingCorrect(){
-        return EncodingHandler.isArrayOfBytesEncodingCorrect(encoding.encodeString(key).getBytes(), encoding, keyLanguage,Dictionary.KEY_ENCODING_MINIMAL_RATIO);
+    public void isKeyEncodingCorrect() throws WrongEncodingException{
+        if (!EncodingHandler.isArrayOfBytesEncodingCorrect(encoding.encodeString(key).getBytes(), encoding, keyLanguage,Dictionary.KEY_ENCODING_MINIMAL_RATIO)){
+            throw new WrongEncodingException(encoding, wordLanguage, key, OriginSubject.WORD);
+        }
     }
 
-    public boolean isWordEncodingCorrect(){
-        return EncodingHandler.isArrayOfBytesEncodingCorrect(encoding.encodeString(word).getBytes(), encoding, wordLanguage, Dictionary.WORD_ENCODING_MINIMAL_RATIO);
+    public void isWordEncodingCorrect() throws WrongEncodingException{
+        if(!EncodingHandler.isArrayOfBytesEncodingCorrect(encoding.encodeString(word).getBytes(), encoding, wordLanguage, Dictionary.WORD_ENCODING_MINIMAL_RATIO)){
+            throw new WrongEncodingException(encoding, wordLanguage, word, OriginSubject.WORD);
+        }
     }
 
     public String getKey() {

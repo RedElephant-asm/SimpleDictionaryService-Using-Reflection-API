@@ -1,6 +1,7 @@
 package org.SimpleDictionaryService;
 
 import org.SimpleDictionaryService.handlers.EncodingHandler;
+import org.SimpleDictionaryService.throwable.OriginSubject;
 import org.SimpleDictionaryService.throwable.WrongEncodingException;
 
 import java.io.*;
@@ -25,9 +26,6 @@ public class Dictionary extends File implements Encoded{
     @Override
     public boolean isEncodingCorrect(){
         byte[] bytes = readAllBytes();
-        if (bytes.length < Encoding.MINIMAL_FILE_LENGTH){
-            return false;
-        }
         try {
             isWordEncodingCorrect(bytes);
             isKeyEncodingCorrect(bytes);
@@ -36,6 +34,10 @@ public class Dictionary extends File implements Encoded{
             return false;
         }
         return true;
+    }
+
+    public boolean isHaveMinLength(){
+        return readAllBytes().length >= Encoding.MINIMAL_FILE_LENGTH;
     }
 
     private byte[] readAllBytes(){
@@ -51,12 +53,12 @@ public class Dictionary extends File implements Encoded{
 
     private void isWordEncodingCorrect(byte[] bytes) throws WrongEncodingException{
         if(!EncodingHandler.isArrayOfBytesEncodingCorrect(bytes, encoding, wordLanguage, WORD_ENCODING_MINIMAL_RATIO))
-            throw new WrongEncodingException(encoding.name(), this.getPath(), wordLanguage.name());
+            throw new WrongEncodingException(encoding, wordLanguage, getPath(), OriginSubject.FILE);
     }
 
     private void isKeyEncodingCorrect(byte[] bytes) throws WrongEncodingException{
         if(!EncodingHandler.isArrayOfBytesEncodingCorrect(bytes, encoding, keyLanguage, KEY_ENCODING_MINIMAL_RATIO))
-            throw new WrongEncodingException(encoding.name(), this.getPath(), keyLanguage.name());
+            throw new WrongEncodingException(encoding, keyLanguage, getPath(), OriginSubject.FILE);
     }
 
     public Language getWordLanguage() {

@@ -2,7 +2,7 @@ package org.SimpleDictionaryService.handlers;
 
 import java.nio.CharBuffer;
 
-public abstract class BinaryHandler {
+public class BinaryHandler {
 
     public static int getNumberLength(int number){
         String binaryString = Integer.toBinaryString(number);

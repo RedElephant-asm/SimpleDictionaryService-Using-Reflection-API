@@ -1,14 +1,7 @@
 package org.SimpleDictionaryService;
 
 import org.SimpleDictionaryService.handlers.BinaryHandler;
-import org.SimpleDictionaryService.handlers.ReflectionHandler;
-import org.omg.CORBA.UNKNOWN;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.SimpleDictionaryService.handlers.BinaryHandler.getBinaryString;
-import static org.SimpleDictionaryService.handlers.BinaryHandler.getNumberLength;
+import org.SimpleDictionaryService.throwable.InvalidWordLengthException;
 
 public enum Language {
 
@@ -48,6 +41,14 @@ public enum Language {
             }
         }
         return UNKNOWN_LANGUAGE;
+    }
+
+    public static boolean isLanguageExist(String languageName){
+        return !(getLanguageByName(languageName) == UNKNOWN_LANGUAGE);
+    }
+
+    public boolean isWordLengthCorrect(String word){
+        return word.length() == wordLength;
     }
 
     public int getWordLength() {
